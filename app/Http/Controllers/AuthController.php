@@ -27,7 +27,7 @@ class AuthController extends Controller
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|max:16',
         ]);
 
         $ttl = env('JWT_TTL');
@@ -57,9 +57,9 @@ class AuthController extends Controller
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:17',
-            'email' => 'required|string|email|max:100|unique:users',
+            'email' => 'required|string|email|unique:users',
             'country' => 'required',
-            'telephone' => 'required|string|max:13',
+            'telephone' => 'required|string|max:13|unique:users',
             'password' => 'required|string|max:16',
         ]);
 
