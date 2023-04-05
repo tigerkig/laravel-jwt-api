@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InsightsController;
+use App\Http\Controllers\TeamMemberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,5 +29,12 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'news' ], function () {
     Route::get('/', [InsightsController::class, 'all'])->name('news.all');
     Route::get('/{id}', [InsightsController::class, 'detail'])->name('news.detail');
     Route::post('/add', [InsightsController::class, 'store'])->name('news.store');
+});
 
+Route::group([ 'middleware' => 'api', 'prefix' => 'teams' ], function () {
+    Route::get('/', [TeamMemberController::class, 'all'])->name('teams.all');
+    Route::get('/{id}', [TeamMemberController::class, 'detail'])->name('teams.detail');
+    Route::post('/update/{id}', [TeamMemberController::class, 'update'])->name('teams.update');
+    Route::post('/add', [TeamMemberController::class, 'store'])->name('teams.store');
+    Route::delete('/{id}', [TeamMemberController::class, 'delete'])->name('teams.delete');
 });
