@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InsightsController;
 use App\Http\Controllers\TeamMemberController;
+use App\Http\Controllers\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +23,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
-    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile'); 
+    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
 });
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'news' ], function () {
@@ -37,4 +38,11 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'teams' ], function () {
     Route::post('/update/{id}', [TeamMemberController::class, 'update'])->name('teams.update');
     Route::post('/add', [TeamMemberController::class, 'store'])->name('teams.store');
     Route::delete('/{id}', [TeamMemberController::class, 'delete'])->name('teams.delete');
+});
+Route::group([ 'middleware' => 'api', 'prefix' => 'organization' ], function () {
+    Route::get('/', [OrganizationController::class, 'index'])->name('organization.index');
+    Route::get('/{id}', [OrganizationController::class, 'show'])->name('organization.show');
+    Route::post('/add', [OrganizationController::class, 'store'])->name('organization.store');
+    Route::post('/update/{id}', [OrganizationController::class, 'update'])->name('organization.update');
+    Route::delete('/{id}', [OrganizationController::class, 'destroy'])->name('organization.destroy');
 });
