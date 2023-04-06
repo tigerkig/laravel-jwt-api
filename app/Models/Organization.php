@@ -20,7 +20,10 @@ class Organization extends Model
         'mission',
         'plans',
         'history',
-        'details',
+        'founder_details',
+        'goals',
+        'information',
+        'location'
     ];
 
     public function organizationFiles()
