@@ -30,8 +30,6 @@ class CreateOrganizationFilesTable extends Migration
      */
     public function down()
     {
-        Schema::table('organization_files', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('organization_files');
     }
 }

@@ -49,14 +49,11 @@ class OrganizationController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
-                'about' => 'nullable|string',
-                'mission' => 'nullable|string',
-                'plans' => 'nullable|string',
-                'history' => 'nullable|string',
-                'founder_details' => 'nullable|string',
-                'goals' => 'nullable|string',
-                'information' => 'nullable|string',
-                'location' => 'nullable|string',
+                'about' => 'required',
+                'mission' => 'required',
+                'plans' => 'required',
+                'history' => 'required',
+                'details' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -67,14 +64,13 @@ class OrganizationController extends Controller
 
             $photos = $request->file('photos');
             $registrations = $request->file('registrations');
-            $video = $request->file('video');
-            if (!empty($photos) || !empty($registrations) || !empty($video)) {
+            if (!empty($photos) || !empty($registrations)) {
                 $organizationFiles = [];
                 foreach ($photos as $photo) {
                     $path = $photo->store('image', 'public');
                     $type = $photo->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
                     $organizationFiles[] = new OrganizationFiles([
-                        'file_name' => 'storage/organizations/'.$path,
+                        'file_name' => 'storage/'.$path,
                         'type' => $type,
                         'organization_id' => $organization->id
                     ]);
@@ -84,36 +80,18 @@ class OrganizationController extends Controller
                     $path = $registration->store('registration', 'public');
                     $type = $registration->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
                     $organizationFiles[] = new OrganizationFiles([
-                        'file_name' => 'storage/organizations/'.$path,
+                        'file_name' => 'storage/'.$path,
                         'type' => $type,
                         'organization_id' => $organization->id
                     ]);
                 }
-
-                if (!empty($video)) {
-                    $extension = $video->getClientOriginalExtension();
-                    if ($extension === 'mov' || $extension === 'mp4' || $extension === 'avi') {
-                        $path = $video->store('video', 'public');
-                        $organizationFiles[] = new OrganizationFiles([
-                            'file_name' => 'storage/organizations/'.$path,
-                            'type' => 'Video',
-                            'organization_id' => $organization->id
-                        ]);
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Invalid video file type. Allowed extensions are .mov, .mp4, and .avi.'
-                        ], 400);
-                    }
-                }
-
                 try {
                     $organization->organizationFiles()->saveMany($organizationFiles);
                     $organizationFiles[] = $organizationFiles;
 
                     return response()->json([
                         'success' => true,
-                        'message' => 'Organization successfully created with files uploaded',
+                        'message' => 'Organization successfully created with photos',
                         'data ' => $organization,
                     ], 201);
                 } catch (\Exception $e) {
@@ -184,14 +162,11 @@ class OrganizationController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string',
-                'about' => 'nullable|string',
-                'mission' => 'nullable|string',
-                'plans' => 'nullable|string',
-                'history' => 'nullable|string',
-                'founder_details' => 'nullable|string',
-                'goals' => 'nullable|string',
-                'information' => 'nullable|string',
-                'location' => 'nullable|string',
+                'about' => 'required',
+                'mission' => 'required',
+                'plans' => 'required',
+                'history' => 'required',
+                'details' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -202,14 +177,13 @@ class OrganizationController extends Controller
 
             $photos = $request->file('photos');
             $registrations = $request->file('registrations');
-            $video = $request->file('video');
-            if (!empty($photos) || !empty($registrations) || !empty($video)) {
+            if (!empty($photos) || !empty($registrations)) {
                 $organizationFiles = [];
                 foreach ($photos as $photo) {
                     $path = $photo->store('image', 'public');
                     $type = $photo->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
                     $organizationFiles[] = new OrganizationFiles([
-                        'file_name' => 'storage/organizations/'.$path,
+                        'file_name' => 'storage/'.$path,
                         'type' => $type,
                         'organization_id' => $organization->id
                     ]);
@@ -219,29 +193,11 @@ class OrganizationController extends Controller
                     $path = $registration->store('registration', 'public');
                     $type = $registration->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
                     $organizationFiles[] = new OrganizationFiles([
-                        'file_name' => 'storage/organizations/'.$path,
+                        'file_name' => 'storage/'.$path,
                         'type' => $type,
                         'organization_id' => $organization->id
                     ]);
                 }
-
-                if (!empty($video)) {
-                    $extension = $video->getClientOriginalExtension();
-                    if ($extension === 'mov' || $extension === 'mp4' || $extension === 'avi') {
-                        $path = $video->store('video', 'public');
-                        $organizationFiles[] = new OrganizationFiles([
-                            'file_name' => 'storage/organizations/'.$path,
-                            'type' => 'Video',
-                            'organization_id' => $organization->id
-                        ]);
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Invalid video file type. Allowed extensions are .mov, .mp4, and .avi.'
-                        ], 400);
-                    }
-                }
-
                 try {
                     $organization->organizationFiles()->saveMany($organizationFiles);
                     $organizationFiles[] = $organizationFiles;

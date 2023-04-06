@@ -16,14 +16,11 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('about')->nullable();
-            $table->text('mission')->nullable();
-            $table->text('plans')->nullable();
-            $table->text('history')->nullable();
-            $table->text('founder_details')->nullable();
-            $table->text('goals')->nullable();
-            $table->text('information')->nullable();
-            $table->string('location')->nullable();
+            $table->text('about');
+            $table->text('mission');
+            $table->text('plans');
+            $table->text('history');
+            $table->text('details');
             $table->timestamps();
         });
     }
@@ -35,8 +32,6 @@ class CreateOrganizationsTable extends Migration
      */
     public function down()
     {
-        Schema::table('organizations', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('organizations');
     }
 }
