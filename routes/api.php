@@ -3,10 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FundraiserController;
 use App\Http\Controllers\InsightsController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\SupporterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,4 +64,21 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'organization' ], function () 
     Route::post('/add', [OrganizationController::class, 'store'])->name('organization.store');
     Route::post('/update/{id}', [OrganizationController::class, 'update'])->name('organization.update');
     Route::delete('/{id}', [OrganizationController::class, 'destroy'])->name('organization.destroy');
+    Route::post('/donate/{fundraiser_id}', [SupporterController::class, 'store'])->name('supporter.store');
+});
+
+Route::group([ 'middleware' => 'api', 'prefix' => 'fundraiser' ], function () {
+    Route::get('/', [FundraiserController::class, 'index'])->name('fundraiser.index');
+    Route::get('/{id}', [FundraiserController::class, 'show'])->name('fundraiser.show');
+    Route::post('/add', [FundraiserController::class, 'store'])->name('fundraiser.store');
+    Route::post('/update/{id}', [FundraiserController::class, 'update'])->name('fundraiser.update');
+    Route::delete('/{id}', [FundraiserController::class, 'destroy'])->name('fundraiser.destroy');
+    Route::get('/{fundraiser_id}/supporters', [SupporterController::class, 'index'])->name('supporter.index');
+});
+
+Route::group([ 'middleware' => 'api', 'prefix' => 'supporter' ], function () {
+    Route::get('/{id}', [SupporterController::class, 'show'])->name('supporter.show');
+    Route::post('/add', [SupporterController::class, 'store'])->name('supporter.store');
+    Route::post('/update/{id}', [SupporterController::class, 'update'])->name('supporter.update');
+    Route::delete('/{id}', [SupporterController::class, 'destroy'])->name('supporter.destroy');
 });
