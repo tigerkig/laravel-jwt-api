@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fundraiser;
-use App\Models\Organization;
 use App\Models\Supporter;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -47,7 +48,7 @@ class SupporterController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
+                'name' => 'string|max:255',
                 'avatar' => 'nullable|image|max:2048',
                 'amount_donated' => 'required|numeric',
             ]);
@@ -59,27 +60,32 @@ class SupporterController extends Controller
                 ], 400);
             }
 
-            $supporter = Supporter::create(
-                array_merge(
-                    $validator->validated(),
-                    ['fundraiser_id' => $fundraiser_id]
-                )
-            );
+            $fundraiser = Fundraiser::find($fundraiser_id);
+
+            if ($fundraiser->status !== 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This fundraiser is not active'
+                ], 400);
+            }
+
+            $fundraiser->amount_raised += $request->input('amount_donated');
+
+            if ($fundraiser->amount_raised >= $fundraiser->target) {
+                $fundraiser->status = 1;
+            }
+
+            $fundraiser->save();
+            $supporter = Supporter::create(array_merge(
+                $validator->validated(),
+                ['fundraiser_id' => $fundraiser_id]
+            ));
 
             if ($request->hasFile('avatar')) {
                 $avatar = $request->file('avatar');
                 $avatarPath = $avatar->store('avatars', 'public');
                 $supporter->avatar = 'storage/' . $avatarPath;
             }
-
-            $fundraiser = Fundraiser::find($fundraiser_id);
-
-            if ($fundraiser->status !== 0) {
-                return response()->json(['message' => 'Fundraiser is not in progress'], 400);
-            }
-
-            $fundraiser->amount_raised += $request->input('amount_donated');
-            $fundraiser->save();
 
             return response()->json([
                 'success' => true,
@@ -96,12 +102,29 @@ class SupporterController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Supporter  $supporter
+     * @param  int  $supporter
      * @return \Illuminate\Http\Response
      */
-    public function show(Supporter $supporter)
+    public function show($supporter)
     {
-        //
+        try {
+            $result = Supporter::where('id', $supporter)
+                ->firstOrFail();
+            return response()->json([
+                'success' => true,
+                'data' => $result
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Supporter not found"
+            ], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Failed to fetch supporter data: " . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -130,11 +153,24 @@ class SupporterController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Supporter  $supporter
+     * @param  int $supporter
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Supporter $supporter)
+    public function destroy($supporter)
     {
-        //
+        try {
+            $supporter = Supporter::findOrFail($supporter);
+            $supporter->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Supporter successfully deleted',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete supporter: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
