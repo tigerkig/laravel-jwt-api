@@ -82,3 +82,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'supporter' ], function () {
     Route::post('/update/{id}', [SupporterController::class, 'update'])->name('supporter.update');
     Route::delete('/{id}', [SupporterController::class, 'destroy'])->name('supporter.destroy');
 });
+
+// Route::group(['middleware' => ['assign.guard:admins','jwt.auth'], 'prefix' => 'admin'],function () {
+// 	Route::get('/admin','AdminController@demo');	
+// });
