@@ -9,6 +9,7 @@ use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\SupporterController;
+use App\Http\Controllers\FaqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,8 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'news' ], function () {
     Route::get('/', [InsightsController::class, 'all'])->name('news.all');
     Route::get('/{id}', [InsightsController::class, 'detail'])->name('news.detail');
     Route::post('/add', [InsightsController::class, 'store'])->name('news.store');
+    Route::post('/{id}', [InsightsController::class, 'update'])->name('news.update');
+    Route::delete('/{id}', [InsightsController::class, 'delete'])->name('news.delete');
 });
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'teams' ], function () {
@@ -58,6 +61,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'volunteer' ], function () {
     Route::patch('/description/{id}', [VolunteerController::class, 'updateDescription'])->name('volunteer_description.update');
     Route::delete('/description/{id}', [VolunteerController::class, 'deleteDescription'])->name('volunteer_description.delete');
 });
+
 Route::group([ 'middleware' => 'api', 'prefix' => 'organization' ], function () {
     Route::get('/', [OrganizationController::class, 'index'])->name('organization.index');
     Route::get('/{id}', [OrganizationController::class, 'show'])->name('organization.show');
@@ -83,6 +87,10 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'supporter' ], function () {
     Route::delete('/{id}', [SupporterController::class, 'destroy'])->name('supporter.destroy');
 });
 
-// Route::group(['middleware' => ['assign.guard:admins','jwt.auth'], 'prefix' => 'admin'],function () {
-// 	Route::get('/admin','AdminController@demo');	
-// });
+Route::group([ 'middleware' => 'api', 'prefix' => 'faq' ], function () {
+    Route::get('/', [FaqController::class, 'all'])->name('faq.all');
+    Route::get('/{id}', [FaqController::class, 'detail'])->name('faq.detail');
+    Route::put('/add', [FaqController::class, 'store'])->name('faq.store');
+    Route::patch('/{id}', [FaqController::class, 'update'])->name('faq.update');
+    Route::delete('/{id}', [FaqController::class, 'delete'])->name('faq.delete');
+});
