@@ -10,6 +10,7 @@ use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,4 +94,9 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'faq' ], function () {
     Route::put('/add', [FaqController::class, 'store'])->name('faq.store');
     Route::patch('/{id}', [FaqController::class, 'update'])->name('faq.update');
     Route::delete('/{id}', [FaqController::class, 'delete'])->name('faq.delete');
+});
+
+Route::group([ 'middleware' => 'api', 'prefix' => 'contact' ], function () {
+    Route::get('/', [ContactController::class, 'all'])->name('contact.all');
+    Route::put('/add', [ContactController::class, 'store'])->name('contact.store');
 });
