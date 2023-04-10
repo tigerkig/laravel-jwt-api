@@ -100,7 +100,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'faq' ], function () {
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'contact' ], function () {
     Route::get('/', [ContactController::class, 'all'])->name('contact.all');
-    Route::put('/add', [ContactController::class, 'store'])->name('contact.store');
+    Route::post('/add', [ContactController::class, 'store'])->name('contact.store');
 });
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'carousel' ], function () {
