@@ -77,10 +77,12 @@ class FaqController extends Controller
                 $validator->validated()
             ));
             return response()->json([
+                'status' => true,
                 'message' => 'FAQ successfully updated'
             ], 201);
         } catch (\Throwable $th) {
             return response()->json([
+                'status' => false,
                 'message' => "FAQ can't update"
             ], 400);
         }
@@ -110,10 +112,12 @@ class FaqController extends Controller
         try {
             Faq::find($id)->delete();
             return response()->json([
+                'status' => true,
                 'message' => 'FAQ successfully deleted'
             ], 201);
         } catch (\Throwable $th) {
             return response()->json([
+                'status' => false,
                 'message' => "FAQ can't remove"
             ], 400);
         }
