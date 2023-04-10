@@ -57,7 +57,7 @@ class ContactController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => "Mail can't send. Please contact with admin or check the email address.",
-            ], 201);
+            ], 400);
         }
         
         return response()->json([
