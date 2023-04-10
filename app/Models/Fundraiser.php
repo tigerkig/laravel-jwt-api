@@ -11,7 +11,7 @@ class Fundraiser extends Model
 
     protected $fillable = [
         'title',
-        'description',
+        'isFeatured',
         'target',
         'amount_raised',
         'start_date',

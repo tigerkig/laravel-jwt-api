@@ -16,7 +16,7 @@ class CreateFundraisersTable extends Migration
         Schema::create('fundraisers', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description')->nullable();
+            $table->boolean('isFeatured')->default(0);
             $table->decimal('target', 10, 2);
             $table->decimal('amount_raised', 10, 2)->default(0);
             $table->date('start_date');

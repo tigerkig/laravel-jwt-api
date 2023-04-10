@@ -2,37 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Fundraiser;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use App\Models\Review;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Validator;
+use Exception;
 
-class FundraiserController extends Controller
+
+class ReviewController extends Controller
 {
+    /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct() {
+        $this->middleware('auth:api');
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function all()
     {
         try {
-            $fundraisers = Fundraiser::with('organization')->get();
-            if ($fundraisers->isEmpty()) {
+            $review = Review::with('user')->get();
+            if ($review->isEmpty()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'No fundraisers found',
+                    'message' => 'No reviews found',
                 ], 404);
             }
             return response()->json([
                 'success' => true,
-                'data' => $fundraisers,
+                'data' => $review,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve fundraisers: ' . $e->getMessage(),
+                'message' => 'Failed to retrieve reviews: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -47,29 +57,26 @@ class FundraiserController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'target' => 'required|numeric|min:0',
-                'start_date' => 'required|date|after_or_equal:today',
-                'end_date' => 'nullable|date|after_or_equal:start_date',
-                'organization_id' => 'required|exists:organizations,id',
+                'review' => 'required|string',
+                'user_id' => 'required|exists:users,id',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors()->toJson(), 400);
             }
 
-            $fundraiser = Fundraiser::create($validator->validated());
+            $review = Review::create($validator->validated());
 
             return response()->json([
                 'success' => true,
-                'message' => 'fundraiser successfully created',
-                'data ' => $fundraiser,
+                'message' => 'Review successfully created',
+                'data ' => $review,
             ], 201);
 
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create fundraiser: ' . $e->getMessage()
+                'message' => 'Failed to create review: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -77,13 +84,13 @@ class FundraiserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $fundraiser
+     * @param int $review
      * @return \Illuminate\Http\Response
      */
-    public function show($fundraiser)
+    public function show($review)
     {
         try {
-            $result = Fundraiser::with('organization')->findOrFail($fundraiser);
+            $result = Review::with('user')->findOrFail($review);
 
             return response()->json([
                 'success' => true,
@@ -92,12 +99,12 @@ class FundraiserController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Fundraiser not found"
+                'message' => "Review not found"
             ], 404);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Failed to fetch fundraiser data: " . $e->getMessage()
+                'message' => "Failed to fetch review data: " . $e->getMessage()
             ], 500);
         }
     }
@@ -106,45 +113,42 @@ class FundraiserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int $fundraiser
+     * @param  int $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $fundraiser)
+    public function update(Request $request, $review)
     {
-        $fundraiser = Fundraiser::find($fundraiser);
+        $review = Review::find($review);
 
-        if (!$fundraiser) {
+        if (!$review) {
             return response()->json([
                 'success' => false,
-                'message' => 'Fundraiser not found'
+                'message' => 'Review not found'
             ], 404);
         }
 
         try {
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
-                'target' => 'required|numeric|min:0',
-                'start_date' => 'required|date|after_or_equal:today',
-                'end_date' => 'nullable|date|after_or_equal:start_date',
-                'organization_id' => 'required|exists:organizations,id',
+                'review' => 'required|string|max:255',
+                'user_id' => 'required|exists:users,id',
             ]);
 
             if ($validator->fails()) {
                 return response()->json($validator->errors()->toJson(), 400);
             }
 
-            $fundraiser->update($validator->validated());
+            $review->update($validator->validated());
 
             return response()->json([
                 'success' => true,
-                'message' => 'fundraiser successfully updated',
-                'data ' => $fundraiser,
+                'message' => 'Review successfully updated',
+                'data ' => $review,
             ], 201);
 
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update fundraiser: ' . $e->getMessage()
+                'message' => 'Failed to update review: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -152,23 +156,23 @@ class FundraiserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $fundraiser
+     * @param int $review
      * @return \Illuminate\Http\Response
      */
-    public function destroy($fundraiser)
+    public function delete($review)
     {
         try {
-            $fundraiser = Fundraiser::findOrFail($fundraiser);
-            $fundraiser->delete();
+            $review = Review::findOrFail($review);
+            $review->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Fundraiser successfully deleted',
+                'message' => 'Review successfully deleted',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete fundraiser: ' . $e->getMessage(),
+                'message' => 'Failed to delete review: ' . $e->getMessage(),
             ], 500);
         }
     }
