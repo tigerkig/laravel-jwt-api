@@ -12,4 +12,7 @@
     - php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
     - php artisan jwt:secret
 
-4. php artisan serve
+4. Publish Paypal
+    - php artisan vendor:publish --provider "Srmklive\PayPal\Providers\PayPalServiceProvider"
+
+5. php artisan serve
