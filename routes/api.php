@@ -13,6 +13,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,4 +117,8 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'review' ], function () {
     Route::post('/add', [ReviewController::class, 'store'])->name('review.store');
     Route::patch('/{id}', [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/{id}', [ReviewController::class, 'delete'])->name('review.delete');
+});
+Route::group([ 'middleware' => 'api', 'prefix' => 'payment' ], function () {
+    Route::get('/success/{payment_id}', [PaymentController::class, 'successTransaction'])->name('payment.success');
+    Route::get('/cancel/{payment_id}', [PaymentController::class, 'cancelTransaction'])->name('payment.cancelled');
 });
