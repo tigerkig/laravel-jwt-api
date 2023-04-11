@@ -74,7 +74,6 @@ class PaymentController extends Controller
 
         return response()->json([
             'success' => true,
-            'response' => $response,
             'message' => 'Payment declined',
         ], 201);
     }

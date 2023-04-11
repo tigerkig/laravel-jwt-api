@@ -9,9 +9,6 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Srmklive\PayPal\Services\PayPal;
 use Validator;
 
 class SupporterController extends Controller
