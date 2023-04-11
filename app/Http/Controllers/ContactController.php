@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use Validator;
+use Exception;
+use Mail;
+use App\Mail\ContactMail;
 
 class ContactController extends Controller
 {
@@ -50,13 +53,14 @@ class ContactController extends Controller
         }
 
         $details = array_merge($validator->validated());
+
         try {
-            \Mail::to(env('MAIL_RECEIVER_ADDRESS'))->send(new \App\Mail\ContactMail($details));
+            Mail::to(env('MAIL_RECEIVER_ADDRESS'))->send(new ContactMail($details));
             $data = Contact::create($details);
-        } catch (\Throwable $th) {
+        } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => "Mail can't send. Please contact with admin or check the email address.",
+                'message' => $e->getMessage(),
             ], 403);
         }
         

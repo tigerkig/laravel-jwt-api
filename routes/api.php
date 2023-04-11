@@ -37,7 +37,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'news' ], function () {
     Route::get('/', [InsightsController::class, 'all'])->name('news.all');
     Route::get('/{id}', [InsightsController::class, 'detail'])->name('news.detail');
     Route::post('/add', [InsightsController::class, 'store'])->name('news.store');
-    Route::post('/{id}', [InsightsController::class, 'update'])->name('news.update');
+    Route::put('/{id}', [InsightsController::class, 'update'])->name('news.update');
     Route::delete('/{id}', [InsightsController::class, 'delete'])->name('news.delete');
 });
 
