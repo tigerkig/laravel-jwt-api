@@ -28,18 +28,18 @@ use App\Http\Controllers\PaymentController;
 */
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
+    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     Route::post('/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
-    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('auth.userProfile');
 });
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'news' ], function () {
     Route::get('/', [InsightsController::class, 'all'])->name('news.all');
     Route::get('/{id}', [InsightsController::class, 'detail'])->name('news.detail');
     Route::post('/add', [InsightsController::class, 'store'])->name('news.store');
-    Route::put('/{id}', [InsightsController::class, 'update'])->name('news.update');
+    Route::post('/{id}', [InsightsController::class, 'update'])->name('news.update');
     Route::delete('/{id}', [InsightsController::class, 'delete'])->name('news.delete');
 });
 
@@ -55,15 +55,15 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'volunteer' ], function () {
     // Volunteer Request apis
     Route::get('/request', [VolunteerController::class, 'all'])->name('volunteer_request.all');
     Route::get('/request/{id}', [VolunteerController::class, 'detail'])->name('volunteer_request.detail');
-    Route::put('/request/add', [VolunteerController::class, 'store'])->name('volunteer_request.store');
-    Route::patch('/request/{id}', [VolunteerController::class, 'update'])->name('volunteer_request.update');
+    Route::post('/request/add', [VolunteerController::class, 'store'])->name('volunteer_request.store');
+    Route::post('/request/{id}', [VolunteerController::class, 'update'])->name('volunteer_request.update');
     Route::delete('/request/{id}', [VolunteerController::class, 'delete'])->name('volunteer_request.delete');
 
     // Volunteer description apis
     Route::get('/description', [VolunteerController::class, 'allDescription'])->name('volunteer_description.all');
     Route::get('/description/{id}', [VolunteerController::class, 'detailDescription'])->name('volunteer_description.detail');
-    Route::put('/description/add', [VolunteerController::class, 'storeDescription'])->name('volunteer_description.store');
-    Route::patch('/description/{id}', [VolunteerController::class, 'updateDescription'])->name('volunteer_description.update');
+    Route::post('/description/add', [VolunteerController::class, 'storeDescription'])->name('volunteer_description.store');
+    Route::post('/description/{id}', [VolunteerController::class, 'updateDescription'])->name('volunteer_description.update');
     Route::delete('/description/{id}', [VolunteerController::class, 'deleteDescription'])->name('volunteer_description.delete');
 });
 
@@ -99,8 +99,8 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'supporter' ], function () {
 Route::group([ 'middleware' => 'api', 'prefix' => 'faq' ], function () {
     Route::get('/', [FaqController::class, 'all'])->name('faq.all');
     Route::get('/{id}', [FaqController::class, 'detail'])->name('faq.detail');
-    Route::put('/add', [FaqController::class, 'store'])->name('faq.store');
-    Route::patch('/{id}', [FaqController::class, 'update'])->name('faq.update');
+    Route::post('/add', [FaqController::class, 'store'])->name('faq.store');
+    Route::post('/{id}', [FaqController::class, 'update'])->name('faq.update');
     Route::delete('/{id}', [FaqController::class, 'delete'])->name('faq.delete');
 });
 
@@ -120,9 +120,10 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'review' ], function () {
     Route::get('/', [ReviewController::class, 'all'])->name('review.all');
     Route::get('/{id}', [ReviewController::class, 'show'])->name('review.show');
     Route::post('/add', [ReviewController::class, 'store'])->name('review.store');
-    Route::patch('/{id}', [ReviewController::class, 'update'])->name('review.update');
+    Route::post('/{id}', [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/{id}', [ReviewController::class, 'delete'])->name('review.delete');
 });
+
 Route::group([ 'middleware' => 'api', 'prefix' => 'payment' ], function () {
     Route::get('/success/{payment_id}', [PaymentController::class, 'successTransaction'])->name('payment.success');
     Route::get('/cancel/{payment_id}', [PaymentController::class, 'cancelTransaction'])->name('payment.cancelled');
