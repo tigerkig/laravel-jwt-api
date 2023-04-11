@@ -12,7 +12,9 @@ use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CarouselController;
+use App\Http\Controllers\FundraiserCommentsController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +73,6 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'organization' ], function () 
     Route::post('/add', [OrganizationController::class, 'store'])->name('organization.store');
     Route::post('/update/{id}', [OrganizationController::class, 'update'])->name('organization.update');
     Route::delete('/{id}', [OrganizationController::class, 'destroy'])->name('organization.destroy');
-    Route::post('/donate/{fundraiser_id}', [SupporterController::class, 'store'])->name('supporter.store');
 });
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'fundraiser' ], function () {
@@ -81,6 +82,11 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'fundraiser' ], function () {
     Route::post('/update/{id}', [FundraiserController::class, 'update'])->name('fundraiser.update');
     Route::delete('/{id}', [FundraiserController::class, 'destroy'])->name('fundraiser.destroy');
     Route::get('/{fundraiser_id}/supporters', [SupporterController::class, 'index'])->name('supporter.index');
+    Route::post('/donate/{fundraiser_id}', [SupporterController::class, 'store'])->name('supporter.store');
+    Route::post('/{id}/comment', [FundraiserCommentsController::class, 'store'])->name('fundraiserComment.store');
+    Route::get('/{id}/comments', [FundraiserCommentsController::class, 'index'])->name('fundraiserComment.index');
+    Route::put('/comment/{id}', [FundraiserCommentsController::class, 'update'])->name('fundraiserComment.update');
+    Route::delete('/comment/{id}', [FundraiserCommentsController::class, 'destroy'])->name('fundraiserComment.destroy');
 });
 
 Route::group([ 'middleware' => 'api', 'prefix' => 'supporter' ], function () {
@@ -116,4 +122,8 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'review' ], function () {
     Route::post('/add', [ReviewController::class, 'store'])->name('review.store');
     Route::patch('/{id}', [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/{id}', [ReviewController::class, 'delete'])->name('review.delete');
+});
+Route::group([ 'middleware' => 'api', 'prefix' => 'payment' ], function () {
+    Route::get('/success/{payment_id}', [PaymentController::class, 'successTransaction'])->name('payment.success');
+    Route::get('/cancel/{payment_id}', [PaymentController::class, 'cancelTransaction'])->name('payment.cancelled');
 });

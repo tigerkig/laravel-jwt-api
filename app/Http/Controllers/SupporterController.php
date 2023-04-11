@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fundraiser;
+use App\Models\Payment;
 use App\Models\Supporter;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
 use Validator;
 
 class SupporterController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -46,11 +49,26 @@ class SupporterController extends Controller
      */
     public function store(Request $request, $fundraiser_id)
     {
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $paypalToken = $provider->getAccessToken([
+            'force_refresh' => true,
+            'cache' => false
+        ]);
+
         try {
             $validator = Validator::make($request->all(), [
-                'name' => 'string|max:255',
-                'avatar' => 'nullable|image|max:2048',
-                'amount_donated' => 'required|numeric',
+                'amount_donated' => 'required|numeric|min:1',
+                'currency' => 'nullable|string|in:USD,EUR,AUD,BRL,CAD,CZK,DKK,HKD,HUF,ILS,JPY,MYR,MXN,NOK,NZD,PHP,PLN,GBP,RUB,SGD,SEK,CHF,TWD,THB,TRY',
+                'firstname' => 'nullable|string',
+                'lastname' => 'nullable|string',
+                'email' => 'nullable|email',
+                'phone' => 'nullable|string',
+                'address' => 'nullable|string',
+                'country' => 'nullable|string',
+                'state' => 'nullable|string',
+                'city' => 'nullable|string',
+                'isAnonymous' => 'boolean',
             ]);
 
             if ($validator->fails()) {
@@ -76,22 +94,58 @@ class SupporterController extends Controller
             }
 
             $fundraiser->save();
-            $supporter = Supporter::create(array_merge(
-                $validator->validated(),
-                ['fundraiser_id' => $fundraiser_id]
-            ));
+            $user = auth()->user();
+            $firstname = $user ? $user->name : $request->input('firstname');
+            $lastname = $user ? $user->name: $request->input('lastname');
+            $address = $user ? $user->address : $request->input('address');
+            $country = $user ? $user->country : $request->input('country');
+            $state = $user ? $user->state :  $request->input('state');
+            $city = $user ? $user->city : $request->input('city');
+            $email = $user ? $user->email : $request->input('email');
+            $phone = $user ? $user->telephone : $request->input('phone');
 
-            if ($request->hasFile('avatar')) {
-                $avatar = $request->file('avatar');
-                $avatarPath = $avatar->store('avatars', 'public');
-                $supporter->avatar = 'storage/' . $avatarPath;
+            $payment = Payment::create([
+                'currency' => $request->input('currency'),
+                'firstname' => $firstname,
+                'lastname' => $lastname,
+                'amount' => $request->input('amount_donated'),
+                'email' => $email,
+                'phone' => $phone,
+                'address' => $address,
+                'country' => $country,
+                'state' => $state,
+                'city' => $city,
+                'fundraiser_id' => $fundraiser_id,
+                'isAnonymous' => $request->input('isAnonymous'),
+            ]);
+
+            $response = $provider->createOrder([
+                "intent" => "CAPTURE",
+                "application_context" => [
+                    "return_url" => route('payment.success', ['payment_id' => $payment->id]),
+                    "cancel_url" => route('payment.cancelled', ['payment_id' => $payment->id]),
+                ],
+                "purchase_units" => [
+                    0 => [
+                        "amount" => [
+                            "currency_code" => $request->currency,
+                            "value" => $request->amount_donated
+                        ]
+                    ]
+                ]
+            ]);
+
+            if (isset($response['id']) && $response['id'] != null) {
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment is being processed.',
+                    'approval_url' => $response['links'][1]['href'],
+                    'paypalToken' => $paypalToken
+                ], 201);
+            } else {
+                return response()->json(['message' => $response['message'] ?? 'Something went wrong.'], 500);
             }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Supporter successfully donated',
-                'data ' => $supporter,
-            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to donate: ' . $e->getMessage()
@@ -125,17 +179,6 @@ class SupporterController extends Controller
                 'message' => "Failed to fetch supporter data: " . $e->getMessage()
             ], 500);
         }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Supporter  $supporter
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Supporter $supporter)
-    {
-        //
     }
 
     /**
