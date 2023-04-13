@@ -39,6 +39,7 @@ class FaqController extends Controller
 
         $validator = Validator::make($request->all(), [
             'question' => 'required|string',
+            'answer' => 'required|string',
         ]);
 
         if($validator->fails()){
