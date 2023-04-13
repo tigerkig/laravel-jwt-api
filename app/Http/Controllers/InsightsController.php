@@ -96,7 +96,6 @@ class InsightsController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'author' => 'required|string',
-            'cover' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
             'content' => 'required|string',
         ]);
 
@@ -105,11 +104,17 @@ class InsightsController extends Controller
         }
 
         try {
-            $image_path = $request->file('cover')->store('image', 'public');
-            Insights::where('id', $id)->update(array_merge(
-                $validator->validated(),
-                ['cover' => 'storage/' . $image_path]
-            ));
+            
+            if($request->hasFile('cover')){
+                $image_path = $request->file('cover')->store('image', 'public');
+                Insights::where('id', $id)->update(array_merge(
+                    $validator->validated(),
+                    ['cover' => 'storage/' . $image_path]
+                ));
+            } else {
+                Insights::where('id', $id)->update($validator->validated());
+            }
+            
             return response()->json([
                 'status' => true,
                 'message' => 'Insight successfully updated'
