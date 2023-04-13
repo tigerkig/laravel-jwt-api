@@ -12,15 +12,6 @@ use App\Mail\ContactMail;
 class ContactController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->middleware('auth:api');
-    }
-
-    /**
      * Get all contacts.
      *
      * @return \Illuminate\Http\JsonResponse

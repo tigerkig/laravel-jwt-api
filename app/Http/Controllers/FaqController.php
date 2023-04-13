@@ -9,15 +9,6 @@ use Validator;
 class FaqController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->middleware('auth:api');
-    }
-
-    /**
      * Get all FAQ.
      *
      * @return \Illuminate\Http\JsonResponse

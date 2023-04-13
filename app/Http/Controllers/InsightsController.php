@@ -10,15 +10,6 @@ class InsightsController extends Controller
 {
 
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->middleware('auth:api');
-    }
-
-    /**
      * Add new an insight.
      *
      * @return \Illuminate\Http\JsonResponse

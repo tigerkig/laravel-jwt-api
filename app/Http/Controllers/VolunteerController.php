@@ -10,15 +10,6 @@ use Validator;
 class VolunteerController extends Controller
 {
     /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->middleware('auth:api');
-    }
-
-    /**
      * Get all volunteer requets.
      *
      * @return \Illuminate\Http\JsonResponse
