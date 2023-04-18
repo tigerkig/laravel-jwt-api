@@ -49,6 +49,7 @@ class FundraiserController extends Controller
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'target' => 'required|numeric|min:0',
+                'target_currency' => 'required|string|max:5',
                 'start_date' => 'required|date|after_or_equal:today',
                 'end_date' => 'nullable|date|after_or_equal:start_date',
                 'organization_id' => 'required|exists:organizations,id',
