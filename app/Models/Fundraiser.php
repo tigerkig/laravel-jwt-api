@@ -13,6 +13,7 @@ class Fundraiser extends Model
         'title',
         'isFeatured',
         'target',
+        'target_currency',
         'amount_raised',
         'start_date',
         'end_date',
