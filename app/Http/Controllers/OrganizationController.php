@@ -60,7 +60,7 @@ class OrganizationController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Organization successfully created',
-                'data ' => $organization,
+                'data' => $organization,
             ], 201);
         } catch (Exception $e) {
             return response()->json([
@@ -136,61 +136,61 @@ class OrganizationController extends Controller
             $photos = $request->file('photos');
             $registrations = $request->file('registrations');
             $video = $request->file('video');
-            if (!empty($photos) || !empty($registrations) || !empty($video)) {
-                $organizationFiles = [];
-                foreach ($photos as $photo) {
-                    $path = $photo->store('image', 'public');
-                    $type = $photo->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
+            $organizationFiles = [];
+
+            if (!empty($photos)) {
+                $path = $photos->store('image', 'public');
+                $type = $photos->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
+                $organizationFiles[] = new OrganizationFiles([
+                    'file_name' => 'storage/organizations/'.$path,
+                    'type' => $type,
+                    'organization_id' => $organization->id
+                ]);
+            }
+
+            if (!empty($registrations)) {
+                $path = $registrations->store('registration', 'public');
+                $type = $registrations->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
+                $organizationFiles[] = new OrganizationFiles([
+                    'file_name' => 'storage/organizations/'.$path,
+                    'type' => $type,
+                    'organization_id' => $organization->id
+                ]);
+            }
+
+            if (!empty($video)) {
+                $extension = $video->getClientOriginalExtension();
+                if ($extension === 'mov' || $extension === 'mp4' || $extension === 'avi') {
+                    $path = $video->store('video', 'public');
                     $organizationFiles[] = new OrganizationFiles([
                         'file_name' => 'storage/organizations/'.$path,
-                        'type' => $type,
+                        'type' => 'Video',
                         'organization_id' => $organization->id
                     ]);
-                }
-
-                foreach ($registrations as $registration) {
-                    $path = $registration->store('registration', 'public');
-                    $type = $registration->getClientOriginalExtension() === 'pdf' ? 'Registration' : 'Photo';
-                    $organizationFiles[] = new OrganizationFiles([
-                        'file_name' => 'storage/organizations/'.$path,
-                        'type' => $type,
-                        'organization_id' => $organization->id
-                    ]);
-                }
-
-                if (!empty($video)) {
-                    $extension = $video->getClientOriginalExtension();
-                    if ($extension === 'mov' || $extension === 'mp4' || $extension === 'avi') {
-                        $path = $video->store('video', 'public');
-                        $organizationFiles[] = new OrganizationFiles([
-                            'file_name' => 'storage/organizations/'.$path,
-                            'type' => 'Video',
-                            'organization_id' => $organization->id
-                        ]);
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Invalid video file type. Allowed extensions are .mov, .mp4, and .avi.'
-                        ], 400);
-                    }
-                }
-
-                try {
-                    $organization->organizationFiles()->saveMany($organizationFiles);
-                    $organizationFiles[] = $organizationFiles;
-
+                } else {
                     return response()->json([
-                        'success' => true,
-                        'message' => 'Organization successfully updated with photos',
-                        'data ' => $organization,
-                    ], 201);
-                } catch (\Exception $e) {
-                    return response()->json([
-                        'message' => 'Failed to save organization file: ' . $e->getMessage()
-                    ], 500);
+                        'success' => false,
+                        'message' => 'Invalid video file type. Allowed extensions are .mov, .mp4, and .avi.'
+                    ], 400);
                 }
             }
-        } catch (Exception $e) {
+
+            try {
+                $organization->organizationFiles()->saveMany($organizationFiles);
+                $organizationFiles[] = $organizationFiles;
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Organization successfully updated with photos',
+                    'data' => $organization,
+                ], 201);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Failed to save organization file: ' . $e->getMessage()
+                ], 500);
+            }
+        }
+        catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update organization: ' . $e->getMessage()
@@ -200,7 +200,7 @@ class OrganizationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Organization successfully updated',
-            'data ' => $organization,
+            'data' => $organization,
         ], 201);
     }
 
